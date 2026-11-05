@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Завдання №3 — Бібліотека</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; color: #202020; }
+    button { padding: 10px 18px; cursor: pointer; }
+    button[aria-selected="true"] { background: #174ea6; color: white; }
+    button:focus-visible { outline: 3px solid #b45309; outline-offset: 3px; }
+    [role="tabpanel"] { overflow-x: auto; margin-top: 16px; }
+    table { border-collapse: collapse; width: 100%; }
+    caption { text-align: left; font-weight: bold; margin-bottom: 12px; }
+    th, td { border: 1px solid #999; padding: 10px; text-align: left; }
+    thead { background: #edf2f7; }
+      fieldset { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 12px; }
+    label { display: flex; flex-direction: column; gap: 6px; }
+    input, select { padding: 8px; font: inherit; min-width: 0; }
+    .message { color: #155724; }
+      .editable { cursor: text; }
+    .editable:hover, .editable:focus { background: #fff8db; }
+    td input, td select { box-sizing: border-box; width: 100%; min-width: 130px; }
+  </style>
+</head>
+<body>
+  <h1>Бібліотека</h1>
+  <p>Завдання №3. Предметна область — бібліотека. Сутності: книга, читач, видача книги.</p>
+  <p>Кожна сутність має 7 характеристик, наведених у заголовках відповідної таблиці.
+    Усі записи вигадані та використовуються для навчального прикладу.</p>
+
+  <p>Додавайте записи через форму у відповідній вкладці. Усі поля обов’язкові, крім фактичної дати повернення. Після оновлення сторінки додані записи зникають.</p>
+  <p>Натисніть на комірку для редагування. Enter або клік поза полем — зберегти, Escape — скасувати. Коди записів незмінні. Кнопка × видаляє рядок, якщо він не використовується у видачах.</p>
+  <div role="tablist" aria-label="Сутності бібліотеки">
+    <button type="button" id="tab-books" role="tab" aria-selected="true" aria-controls="books" tabindex="0">Книги</button>
+    <button type="button" id="tab-readers" role="tab" aria-selected="false" aria-controls="readers" tabindex="-1">Читачі</button>
+    <button type="button" id="tab-loans" role="tab" aria-selected="false" aria-controls="loans" tabindex="-1">Видачі книг</button>
+  </div>
+
+  <!-- Усі три таблиці вже є в HTML. JavaScript перемикає вкладки та керує рядками. -->
+  <section id="books" role="tabpanel" aria-labelledby="tab-books" tabindex="0">
+    <form id="books-form">
+      <fieldset><legend>Додати книгу</legend>
+        <label>Код книги <input name="code" required maxlength="20" placeholder="B004"></label>
+        <label>Назва <input name="title" required maxlength="150"></label>
+        <label>Автор <input name="author" required maxlength="100"></label>
+        <label>Жанр <input name="genre" required maxlength="60"></label>
+        <label>Рік видання <input name="year" type="number" min="1" step="1" required></label>
+        <label>Кількість сторінок <input name="pages" type="number" min="1" step="1" required></label>
+        <label>Кількість примірників <input name="copies" type="number" min="1" step="1" required></label>
+        <div><button type="submit">Додати книгу</button> <button type="reset">Очистити</button></div>
+      </fieldset>
+      <p class="message" role="status" aria-live="polite"></p>
+    </form>
+    <table>
+      <caption>Книга — характеристики та приклади даних</caption>
+      <thead>
+        <tr>
+          <th scope="col">Код книги</th><th scope="col">Назва</th>
+          <th scope="col">Автор</th><th scope="col">Жанр</th>
+          <th scope="col">Рік видання</th><th scope="col">Кількість сторінок</th>
+          <th scope="col">Кількість примірників</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>B001</td><td>Місто на пагорбі</td><td>Олена Коваль</td><td>Роман</td><td>2022</td><td>240</td><td>4</td></tr>
+        <tr><td>B002</td><td>Таємниця старого маяка</td><td>Андрій Лісовий</td><td>Детектив</td><td>2023</td><td>192</td><td>3</td></tr>
+        <tr><td>B003</td><td>Подорож до зірок</td><td>Марія Зоряна</td><td>Фантастика</td><td>2024</td><td>320</td><td>5</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="readers" role="tabpanel" aria-labelledby="tab-readers" tabindex="0" hidden>
+    <form id="readers-form">
+      <fieldset><legend>Додати читача</legend>
+        <label>Номер квитка <input name="code" required maxlength="20" placeholder="R004"></label>
+        <label>ПІБ <input name="fullName" required maxlength="120"></label>
+        <label>Рік народження <input name="birthYear" type="number" min="1900" step="1" required></label>
+        <label>Електронна пошта <input name="email" type="email" required maxlength="150"></label>
+        <label>Дата реєстрації <input name="registered" type="date" required></label>
+        <label>Категорія <select name="category" required><option value="">Оберіть категорію</option><option>Студент</option><option>Викладач</option><option>Школяр</option><option>Інший читач</option></select></label>
+        <label>Ліміт книг <input name="limit" type="number" min="1" step="1" required></label>
+        <div><button type="submit">Додати читача</button> <button type="reset">Очистити</button></div>
+      </fieldset>
+      <p class="message" role="status" aria-live="polite"></p>
+    </form>
+    <table>
+      <caption>Читач — характеристики та приклади даних</caption>
+      <thead>
+        <tr>
+          <th scope="col">Номер квитка</th><th scope="col">ПІБ</th>
+          <th scope="col">Рік народження</th><th scope="col">Електронна пошта</th>
+          <th scope="col">Дата реєстрації</th><th scope="col">Категорія</th>
+          <th scope="col">Ліміт книг</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>R001</td><td>Петренко Ірина Олегівна</td><td>2005</td><td>iryna@example.com</td><td>2026-09-01</td><td>Студент</td><td>5</td></tr>
+        <tr><td>R002</td><td>Савченко Максим Іванович</td><td>1987</td><td>maksym@example.com</td><td>2026-09-10</td><td>Викладач</td><td>10</td></tr>
+        <tr><td>R003</td><td>Мельник Анна Сергіївна</td><td>2010</td><td>anna@example.com</td><td>2026-10-02</td><td>Школяр</td><td>3</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="loans" role="tabpanel" aria-labelledby="tab-loans" tabindex="0" hidden>
+    <form id="loans-form">
+      <fieldset><legend>Додати видачу книги</legend>
+        <label>Номер видачі <input name="code" required maxlength="20" placeholder="L004"></label>
+        <label>Книга <select name="book" required><option value="">Оберіть книгу</option></select></label>
+        <label>Читач <select name="reader" required><option value="">Оберіть читача</option></select></label>
+        <label>Дата видачі <input name="issued" type="date" required></label>
+        <label>Термін повернення <input name="due" type="date" required></label>
+        <label>Фактична дата повернення (необов’язково) <input name="returned" type="date"></label>
+        <label>Стан книги при видачі <select name="condition" required><option value="">Оберіть стан</option><option>Новий</option><option>Добрий</option><option>Задовільний</option></select></label>
+        <div><button type="submit">Додати видачу</button> <button type="reset">Очистити</button></div>
+      </fieldset>
+      <p class="message" role="status" aria-live="polite"></p>
+    </form>
+    <table>
+      <caption>Видача книги — характеристики та приклади даних</caption>
+      <thead>
+        <tr>
+          <th scope="col">Номер видачі</th><th scope="col">Код книги</th>
+          <th scope="col">Номер квитка читача</th><th scope="col">Дата видачі</th>
+          <th scope="col">Термін повернення</th><th scope="col">Фактична дата повернення</th>
+          <th scope="col">Стан книги при видачі</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>L001</td><td>B001</td><td>R001</td><td>2026-10-20</td><td>2026-11-03</td><td>2026-11-01</td><td>Добрий</td></tr>
+        <tr><td>L002</td><td>B002</td><td>R002</td><td>2026-11-01</td><td>2026-11-15</td><td>Ще не повернуто</td><td>Новий</td></tr>
+        <tr><td>L003</td><td>B003</td><td>R003</td><td>2026-11-03</td><td>2026-11-17</td><td>Ще не повернуто</td><td>Добрий</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <script>
+    // Скрипт розміщено після таблиць, тому елементи вже доступні в DOM.
+    const tabs = document.querySelectorAll('[role="tab"]');
+    const panels = document.querySelectorAll('[role="tabpanel"]');
+
+    function activateTab(selectedTab) {
+      // Позначаємо активну вкладку й оновлюємо навігацію клавішею Tab.
+      tabs.forEach(function (tab) {
+        const isSelected = tab === selectedTab;
+        tab.setAttribute('aria-selected', String(isSelected));
+        tab.tabIndex = isSelected ? 0 : -1;
+      });
+
+      // Показуємо лише панель, пов'язану з обраною вкладкою.
+      const panelId = selectedTab.getAttribute('aria-controls');
+      panels.forEach(function (panel) {
+        panel.hidden = panel.id !== panelId;
+      });
+    }
+
+    tabs.forEach(function (tab, index) {
+      tab.addEventListener('click', function () {
+        activateTab(tab);
+      });
+
+      // Додатково підтримуємо стрілки, Home і End для клавіатури.
+      tab.addEventListener('keydown', function (event) {
+        let nextIndex = index;
+        if (event.key === 'ArrowRight') {
+          nextIndex = (index + 1) % tabs.length;
+        } else if (event.key === 'ArrowLeft') {
+          nextIndex = (index - 1 + tabs.length) % tabs.length;
+        } else if (event.key === 'Home') {
+          nextIndex = 0;
+        } else if (event.key === 'End') {
+          nextIndex = tabs.length - 1;
+        } else {
+          return;
+        }
+        event.preventDefault();
+        activateTab(tabs[nextIndex]);
+        tabs[nextIndex].focus();
+      });
+    });
+
+    // Форми працюють без бібліотек. Дані зберігаються лише до оновлення сторінки.
+    const booksForm = document.getElementById('books-form');
+    const readersForm = document.getElementById('readers-form');
+    const loansForm = document.getElementById('loans-form');
+    const currentYear = new Date().getFullYear();
+    booksForm.elements.year.max = currentYear;
+    readersForm.elements.birthYear.max = currentYear;
+
+    // Варіанти для видачі беремо з таблиць, зокрема з нових рядків.
+    function fillOptions(select, panelId) {
+      const previousValue = select.value;
+      while (select.options.length > 1) {
+        select.remove(1);
+      }
+      document.querySelectorAll('#' + panelId + ' tbody tr').forEach(function (row) {
+        const option = document.createElement('option');
+        option.value = readCell(row, 0);
+        option.textContent = option.value + ' — ' + readCell(row, 1);
+        select.appendChild(option);
+      });
+      select.value = previousValue;
+    }
+
+    function updateLoanOptions() {
+      fillOptions(loansForm.elements.book, 'books');
+      fillOptions(loansForm.elements.reader, 'readers');
+    }
+
+    function showError(input, message) {
+      input.setCustomValidity(message);
+      input.reportValidity();
+      input.focus();
+    }
+
+    function setupForm(form, panelId, fieldNames) {
+      const tbody = document.querySelector('#' + panelId + ' tbody');
+      const message = form.querySelector('.message');
+
+      // Після редагування прибираємо попередню помилку, щоб можна було повторити спробу.
+      form.addEventListener('input', function () {
+        fieldNames.forEach(function (name) {
+          form.elements[name].setCustomValidity('');
+        });
+        message.textContent = '';
+      });
+      form.addEventListener('reset', function () {
+        fieldNames.forEach(function (name) {
+          form.elements[name].setCustomValidity('');
+        });
+        message.textContent = '';
+      });
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault(); // Додавання без перезавантаження сторінки.
+        message.textContent = '';
+
+        // Прибираємо зайві пробіли й відхиляємо поля, заповнені лише пробілами.
+        for (const name of fieldNames) {
+          const input = form.elements[name];
+          input.setCustomValidity('');
+          input.value = input.value.trim();
+          if (input.required && input.value === '') {
+            showError(input, 'Заповніть це поле. Пробіли не є значенням.');
+            return;
+          }
+        }
+        if (!form.reportValidity()) return;
+
+        const codeInput = form.elements.code;
+        codeInput.value = codeInput.value.toUpperCase();
+        const duplicate = Array.from(tbody.rows).some(function (row) {
+          return readCell(row, 0).toUpperCase() === codeInput.value;
+        });
+        if (duplicate) {
+          showError(codeInput, 'Такий код уже існує в цій таблиці. Вкажіть інший.');
+          return;
+        }
+
+        if (panelId === 'readers') {
+          const registrationYear = Number(form.elements.registered.value.slice(0, 4));
+          if (registrationYear < Number(form.elements.birthYear.value)) {
+            showError(form.elements.registered, 'Реєстрація не може бути раніше року народження.');
+            return;
+          }
+        }
+
+        if (panelId === 'loans') {
+          if (form.elements.due.value < form.elements.issued.value) {
+            showError(form.elements.due, 'Термін повернення не може бути раніше дати видачі.');
+            return;
+          }
+          if (form.elements.returned.value && form.elements.returned.value < form.elements.issued.value) {
+            showError(form.elements.returned, 'Дата повернення не може бути раніше дати видачі.');
+            return;
+          }
+        }
+
+        // textContent додає введене як текст, а не як HTML-код.
+        const row = document.createElement('tr');
+        fieldNames.forEach(function (name) {
+          const cell = document.createElement('td');
+          cell.textContent = form.elements[name].value || 'Ще не повернуто';
+          row.appendChild(cell);
+        });
+        tbody.appendChild(row);
+        prepareRow(row, panelId);
+        const addedCode = codeInput.value;
+        form.reset();
+        updateLoanOptions();
+        message.textContent = 'Запис ' + addedCode + ' додано до таблиці.';
+        codeInput.focus();
+      });
+    }
+
+    setupForm(booksForm, 'books', ['code', 'title', 'author', 'genre', 'year', 'pages', 'copies']);
+    setupForm(readersForm, 'readers', ['code', 'fullName', 'birthYear', 'email', 'registered', 'category', 'limit']);
+    setupForm(loansForm, 'loans', ['code', 'book', 'reader', 'issued', 'due', 'returned', 'condition']);
+    updateLoanOptions();
+
+    // Коди є сталими ключами. Інші шість полів редагуються по кліку.
+    const fieldMap = {
+      books: ['code', 'title', 'author', 'genre', 'year', 'pages', 'copies'],
+      readers: ['code', 'fullName', 'birthYear', 'email', 'registered', 'category', 'limit'],
+      loans: ['code', 'book', 'reader', 'issued', 'due', 'returned', 'condition']
+    };
+
+    // Під час редагування повертаємо збережене значення, а не текст елемента вводу.
+    function readCell(row, index) {
+      return row.cells[index].dataset.value ?? row.cells[index].textContent;
+    }
+
+    function validateRow(panelId, values) {
+      if (panelId === 'readers' && Number(values[4].slice(0, 4)) < Number(values[2])) {
+        return 'Реєстрація не може бути раніше року народження.';
+      }
+      if (panelId === 'loans') {
+        if (!Array.from(document.querySelectorAll('#books tbody tr')).some(function (r) { return readCell(r, 0) === values[1]; }) ||
+            !Array.from(document.querySelectorAll('#readers tbody tr')).some(function (r) { return readCell(r, 0) === values[2]; })) {
+          return 'Оберіть наявні книгу та читача.';
+        }
+        if (values[4] < values[3]) return 'Термін повернення не може бути раніше дати видачі.';
+        if (values[5] !== 'Ще не повернуто' && values[5] < values[3]) return 'Дата повернення не може бути раніше дати видачі.';
+      }
+      return '';
+    }
+
+    function editCell(cell, row, panelId, index) {
+      if (cell.querySelector('input, select')) return;
+      const oldValue = readCell(row, index);
+      const form = document.getElementById(panelId + '-form');
+      const control = form.elements[fieldMap[panelId][index]].cloneNode(true);
+      control.removeAttribute('name');
+      control.removeAttribute('id');
+      control.setAttribute('aria-label', row.closest('table').tHead.rows[0].cells[index].textContent);
+      control.value = oldValue === 'Ще не повернуто' ? '' : oldValue;
+      cell.dataset.value = oldValue;
+      cell.textContent = '';
+      cell.appendChild(control);
+      control.focus();
+      let finished = false;
+
+      function finish(value) {
+        finished = true; // Захист від повторного збереження через blur після Enter.
+        cell.dataset.value = value;
+        cell.textContent = value;
+        updateLoanOptions();
+      }
+
+      function save(onBlur) {
+        if (finished) return;
+        control.setCustomValidity('');
+        control.value = control.value.trim();
+        const values = fieldMap[panelId].map(function (_, i) { return readCell(row, i); });
+        values[index] = control.value || (panelId === 'loans' && index === 5 ? 'Ще не повернуто' : '');
+        if (control.required && !control.value) {
+          control.setCustomValidity('Значення не може бути порожнім.');
+        } else {
+          control.setCustomValidity(validateRow(panelId, values));
+        }
+        if (!control.checkValidity()) {
+          const error = control.validationMessage;
+          if (onBlur) {
+            finish(oldValue);
+            alert('Зміни не збережено: ' + error);
+          } else {
+            control.reportValidity();
+          }
+          return;
+        }
+        finish(values[index]);
+      }
+
+      control.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          event.stopPropagation();
+          save(false);
+        } else if (event.key === 'Escape') {
+          event.preventDefault();
+          event.stopPropagation();
+          finish(oldValue);
+          cell.focus();
+        }
+      });
+      control.addEventListener('input', function () { control.setCustomValidity(''); });
+      control.addEventListener('blur', function () { save(true); });
+    }
+
+    function deleteRow(row, panelId) {
+      const code = readCell(row, 0);
+      const referenceColumn = panelId === 'books' ? 1 : 2;
+      const isUsed = panelId !== 'loans' && Array.from(document.querySelectorAll('#loans tbody tr')).some(function (loan) {
+        return readCell(loan, referenceColumn) === code;
+      });
+      if (isUsed) {
+        alert('Видалення неможливе: запис ' + code + ' використовується в таблиці «Видачі книг». Спочатку видаліть або змініть пов’язані видачі.');
+        return;
+      }
+      row.remove();
+      updateLoanOptions();
+      document.getElementById(panelId + '-form').querySelector('.message').textContent = 'Запис ' + code + ' видалено.';
+    }
+
+    function prepareRow(row, panelId) {
+      if (row.cells.length > 7) return;
+      for (let index = 1; index < 7; index++) {
+        const cell = row.cells[index];
+        cell.tabIndex = 0;
+        cell.classList.add('editable');
+        cell.title = 'Натисніть для редагування';
+        cell.addEventListener('click', function () { editCell(cell, row, panelId, index); });
+        cell.addEventListener('keydown', function (event) {
+          if (event.target === cell && event.key === 'Enter') {
+            event.preventDefault();
+            editCell(cell, row, panelId, index);
+          }
+        });
+      }
+      const actions = row.insertCell();
+      const removeButton = document.createElement('button');
+      removeButton.type = 'button';
+      removeButton.textContent = '×';
+      removeButton.title = 'Видалити рядок';
+      removeButton.setAttribute('aria-label', 'Видалити запис ' + readCell(row, 0));
+      removeButton.addEventListener('click', function () { deleteRow(row, panelId); });
+      actions.appendChild(removeButton);
+    }
+
+    Object.keys(fieldMap).forEach(function (panelId) {
+      const table = document.querySelector('#' + panelId + ' table');
+      const heading = document.createElement('th');
+      heading.scope = 'col';
+      heading.textContent = 'Дії';
+      table.tHead.rows[0].appendChild(heading);
+      Array.from(table.tBodies[0].rows).forEach(function (row) { prepareRow(row, panelId); });
+    });
+  </script>
+</body>
+</html>
