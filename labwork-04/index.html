@@ -39,7 +39,7 @@
     <button type="button" id="tab-loans" role="tab" aria-selected="false" aria-controls="loans" tabindex="-1">Видачі книг</button>
   </div>
 
-  <!-- Усі три таблиці вже є в HTML. JavaScript перемикає вкладки та керує рядками. -->
+  <!-- HTML містить каркас таблиць. Рядки з даними створює JavaScript. -->
   <section id="books" role="tabpanel" aria-labelledby="tab-books" tabindex="0">
     <form id="books-form">
       <fieldset><legend>Додати книгу</legend>
@@ -64,11 +64,7 @@
           <th scope="col">Кількість примірників</th>
         </tr>
       </thead>
-      <tbody>
-        <tr><td>B001</td><td>Місто на пагорбі</td><td>Олена Коваль</td><td>Роман</td><td>2022</td><td>240</td><td>4</td></tr>
-        <tr><td>B002</td><td>Таємниця старого маяка</td><td>Андрій Лісовий</td><td>Детектив</td><td>2023</td><td>192</td><td>3</td></tr>
-        <tr><td>B003</td><td>Подорож до зірок</td><td>Марія Зоряна</td><td>Фантастика</td><td>2024</td><td>320</td><td>5</td></tr>
-      </tbody>
+      <tbody></tbody>
     </table>
   </section>
 
@@ -96,11 +92,7 @@
           <th scope="col">Ліміт книг</th>
         </tr>
       </thead>
-      <tbody>
-        <tr><td>R001</td><td>Петренко Ірина Олегівна</td><td>2005</td><td>iryna@example.com</td><td>2026-09-01</td><td>Студент</td><td>5</td></tr>
-        <tr><td>R002</td><td>Савченко Максим Іванович</td><td>1987</td><td>maksym@example.com</td><td>2026-09-10</td><td>Викладач</td><td>10</td></tr>
-        <tr><td>R003</td><td>Мельник Анна Сергіївна</td><td>2010</td><td>anna@example.com</td><td>2026-10-02</td><td>Школяр</td><td>3</td></tr>
-      </tbody>
+      <tbody></tbody>
     </table>
   </section>
 
@@ -128,15 +120,103 @@
           <th scope="col">Стан книги при видачі</th>
         </tr>
       </thead>
-      <tbody>
-        <tr><td>L001</td><td>B001</td><td>R001</td><td>2026-10-20</td><td>2026-11-03</td><td>2026-11-01</td><td>Добрий</td></tr>
-        <tr><td>L002</td><td>B002</td><td>R002</td><td>2026-11-01</td><td>2026-11-15</td><td>Ще не повернуто</td><td>Новий</td></tr>
-        <tr><td>L003</td><td>B003</td><td>R003</td><td>2026-11-03</td><td>2026-11-17</td><td>Ще не повернуто</td><td>Добрий</td></tr>
-      </tbody>
+      <tbody></tbody>
     </table>
   </section>
 
   <script>
+    // Початкові записи зберігаються в JavaScript, а не в HTML-рядках.
+    const seedData = {
+  "version": 1,
+  "books": [
+    [
+      "B001",
+      "Місто на пагорбі",
+      "Олена Коваль",
+      "Роман",
+      "2022",
+      "240",
+      "4"
+    ],
+    [
+      "B002",
+      "Таємниця старого маяка",
+      "Андрій Лісовий",
+      "Детектив",
+      "2023",
+      "192",
+      "3"
+    ],
+    [
+      "B003",
+      "Подорож до зірок",
+      "Марія Зоряна",
+      "Фантастика",
+      "2024",
+      "320",
+      "5"
+    ]
+  ],
+  "readers": [
+    [
+      "R001",
+      "Петренко Ірина Олегівна",
+      "2005",
+      "iryna@example.com",
+      "2026-09-01",
+      "Студент",
+      "5"
+    ],
+    [
+      "R002",
+      "Савченко Максим Іванович",
+      "1987",
+      "maksym@example.com",
+      "2026-09-10",
+      "Викладач",
+      "10"
+    ],
+    [
+      "R003",
+      "Мельник Анна Сергіївна",
+      "2010",
+      "anna@example.com",
+      "2026-10-02",
+      "Школяр",
+      "3"
+    ]
+  ],
+  "loans": [
+    [
+      "L001",
+      "B001",
+      "R001",
+      "2026-10-20",
+      "2026-11-03",
+      "2026-11-01",
+      "Добрий"
+    ],
+    [
+      "L002",
+      "B002",
+      "R002",
+      "2026-11-01",
+      "2026-11-15",
+      "Ще не повернуто",
+      "Новий"
+    ],
+    [
+      "L003",
+      "B003",
+      "R003",
+      "2026-11-03",
+      "2026-11-17",
+      "Ще не повернуто",
+      "Добрий"
+    ]
+  ]
+};
+
     // Скрипт розміщено після таблиць, тому елементи вже доступні в DOM.
     const tabs = document.querySelectorAll('[role="tab"]');
     const panels = document.querySelectorAll('[role="tabpanel"]');
@@ -449,7 +529,7 @@
     let renderVersion = 0;
     let lastStoredText = null;
     let storageReady = false;
-    const initialData = collectData();
+    const initialData = seedData;
     let committedData = initialData;
 
     function collectData() {
