@@ -1,94 +1,4 @@
-// Початкові записи зберігаються в JavaScript, а не в HTML-рядках.
-    const seedData = {
-  "version": 1,
-  "books": [
-    [
-      "B001",
-      "Місто на пагорбі",
-      "Олена Коваль",
-      "Роман",
-      "2022",
-      "240",
-      "4"
-    ],
-    [
-      "B002",
-      "Таємниця старого маяка",
-      "Андрій Лісовий",
-      "Детектив",
-      "2023",
-      "192",
-      "3"
-    ],
-    [
-      "B003",
-      "Подорож до зірок",
-      "Марія Зоряна",
-      "Фантастика",
-      "2024",
-      "320",
-      "5"
-    ]
-  ],
-  "readers": [
-    [
-      "R001",
-      "Петренко Ірина Олегівна",
-      "2005",
-      "iryna@example.com",
-      "2026-09-01",
-      "Студент",
-      "5"
-    ],
-    [
-      "R002",
-      "Савченко Максим Іванович",
-      "1987",
-      "maksym@example.com",
-      "2026-09-10",
-      "Викладач",
-      "10"
-    ],
-    [
-      "R003",
-      "Мельник Анна Сергіївна",
-      "2010",
-      "anna@example.com",
-      "2026-10-02",
-      "Школяр",
-      "3"
-    ]
-  ],
-  "loans": [
-    [
-      "L001",
-      "B001",
-      "R001",
-      "2026-10-20",
-      "2026-11-03",
-      "2026-11-01",
-      "Добрий"
-    ],
-    [
-      "L002",
-      "B002",
-      "R002",
-      "2026-11-01",
-      "2026-11-15",
-      "Ще не повернуто",
-      "Новий"
-    ],
-    [
-      "L003",
-      "B003",
-      "R003",
-      "2026-11-03",
-      "2026-11-17",
-      "Ще не повернуто",
-      "Добрий"
-    ]
-  ]
-};
+// Перший запуск починається з порожніх таблиць. Записи додає лише користувач.
 
     // defer виконує скрипт після розбору HTML, коли елементи вже доступні в DOM.
     const tabs = document.querySelectorAll('[role="tab"]');
@@ -402,7 +312,7 @@
     let renderVersion = 0;
     let lastStoredText = null;
     let storageReady = false;
-    const initialData = seedData;
+    const initialData = { version: 1, books: [], readers: [], loans: [] };
     let committedData = initialData;
 
     function collectData() {
@@ -473,7 +383,9 @@
         lastStoredText = text;
         storageReady = true;
         renderData(data);
-        syncMessage.textContent = 'Дані відновлено. Зміни з інших вкладок надходять автоматично.';
+        syncMessage.textContent = text === null
+          ? 'Збережених даних немає. Додайте книги та читачів, а потім видачі.'
+          : 'Дані відновлено. Зміни з інших вкладок надходять автоматично.';
       } catch (error) {
         storageReady = false;
         storageError(error);
@@ -514,7 +426,6 @@
       if (!document.hidden) loadLatest();
     });
     loadLatest();
-    if (storageReady && lastStoredText === null) persistData();
     if (location.protocol === 'file:') {
       document.getElementById('launch-note').textContent = 'Для синхронізації відкрийте цю сторінку через HTTP/HTTPS (наприклад, локальний сервер). Режим file:// не гарантує спільне сховище між вкладками.';
     }
